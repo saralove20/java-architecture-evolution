@@ -11,7 +11,7 @@ import java.sql.Statement;
 // DB 서버에 연결 및 sql 실행
 public class BoardRepository {
     // 게시글 작성(등록)
-    public void create(BoardDto dto) {
+    public BoardDto create(BoardDto dto) {
         String sql = "INSERT INTO board (title, contents) VALUES ('" + dto.getTitle() + "','" + dto.getContents() + "')";
 
         try {
@@ -26,7 +26,13 @@ public class BoardRepository {
                     // 게시글 Dto 반환
                     ResultSet rs = stmt.getGeneratedKeys();
                     if(rs.next()) {
-                        System.out.println("저장한 게시글의 idx : " + rs.getInt(1));
+                        // DB 실행결과를 새로운 DTO에 담아서 반환 (요청 DTO와 응답 DTO는 다른 경우가 많기 때문에 굳이 따로 만들어봤음)
+                        BoardDto returnDto = new BoardDto(
+                                rs.getInt(1),
+                                dto.getTitle(),
+                                dto.getContents()
+                        );
+                        return returnDto;
                     }
                 }
             }
@@ -34,5 +40,7 @@ public class BoardRepository {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
+        return null;
     }
 }

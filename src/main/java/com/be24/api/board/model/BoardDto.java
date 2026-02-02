@@ -17,7 +17,7 @@ public class BoardDto {
         this.contents = contents;
     }
 
-    // 요청으로 받은 데이터를 dto 객체 형태로 변환
+    // 요청으로 받은 데이터를 dto 객체 형태로 변환 (x-www-form-urlencoded 방식으로 온 데이터)
     public static BoardDto toDto(HttpServletRequest req) {
         BoardDto dto = new BoardDto(
                 null,
