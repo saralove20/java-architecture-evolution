@@ -2,35 +2,35 @@ package com.be24.api.board;
 
 import com.be24.api.board.model.BoardDto;
 import com.be24.api.common.BaseResponse;
+import com.be24.api.common.Controller;
 import com.be24.api.util.JsonParser;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import java.io.IOException;
+// 이제 라우팅 처리를 DispatcherServlet & AppConfig가 해주기 때문에 주석 처리 (= 필요 없음)
+// @WebServlet(urlPatterns = {"/board/register"})
+public class BoardController implements Controller {
+    private final BoardService boardService;
 
-// web.xml에 등록하는 것 대신에 사용하는 Annotation
-@WebServlet(urlPatterns = {"/board/register"})
-public class BoardController extends HttpServlet {
-    // 클라이언트가 Http POST 방식으로 요청했을 때 실행되는 메소드
+    // DI 의존성 주입 (AppConfig로부터 매개변수를 통해 의존성을 주입받음 (의존 객체 주입 받음))
+    public BoardController(BoardService boardService) {
+        this.boardService = boardService;
+    }
+
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // 요청으로 받은 데이터를 dto 객체 형태로 변환 (요청 데이터 -> 객체)
-        // 데이터 담는 부분을 DTO로 역할 분리, 데이터 전달 받아서 DTO에 담기
-        // JSON 형식으로 클라이언트가 전달한 요청을 처리
-        BoardDto dto = JsonParser.from(req, BoardDto.class);
+    public BaseResponse process(HttpServletRequest req, HttpServletResponse resp) {
+        BoardDto returnDto = null;
 
-        // 복잡한 로직을 처리하는 역할을 Service 클래스로 분리하고 메서드를 호출해서 사용
-        // boardService 클래스에 싱글톤 적용, new로 객체 생성 못하니까 메소드로 객체 가져옴
-        BoardService boardService = BoardService.getInstance();
+       if (req.getRequestURI().contains("register") && req.getMethod().equals("POST")) {    // 게시글 작성 기능
+           // 클라이언트가 JSON 형식으로 전달한 요청을 처리 -> Dto 객체로 만듦
+           BoardDto dto = JsonParser.from(req, BoardDto.class);
+           // Service의 결과를 반환 받게 변경
+           returnDto = boardService.register(dto);
+       } else if (req.getRequestURI().contains("read") && req.getMethod().equals("GET")) {  // 게시글 조회 기능
+          String boardIdx = req.getParameter("idx");
+          returnDto = boardService.read(boardIdx);
+       }
 
-        // Service의 결과를 반환받게 변경
-        BoardDto returnDto = boardService.register(dto);
-
-        // 응답하는 부분, JSON 형식으로 응답을 처리
-        BaseResponse res = BaseResponse.success(returnDto);
-        resp.getWriter().write(JsonParser.from(res));  // HTTP 응답 Body에 글자를 쓰는 통로, 브라우저/Postman에서 보는 그 응답 내용
+        return BaseResponse.success(returnDto);
     }
 }
