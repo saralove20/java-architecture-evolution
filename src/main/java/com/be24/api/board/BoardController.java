@@ -10,10 +10,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
 
 // web.xml에 등록하는 것 대신에 사용하는 Annotation
 @WebServlet(urlPatterns = {"/board/register"})
@@ -27,7 +23,8 @@ public class BoardController extends HttpServlet {
         BoardDto dto = JsonParser.from(req, BoardDto.class);
 
         // 복잡한 로직을 처리하는 역할을 Service 클래스로 분리하고 메서드를 호출해서 사용
-        BoardService boardService = new BoardService();
+        // boardService 클래스에 싱글톤 적용, new로 객체 생성 못하니까 메소드로 객체 가져옴
+        BoardService boardService = BoardService.getInstance();
 
         // Service의 결과를 반환받게 변경
         BoardDto returnDto = boardService.register(dto);
