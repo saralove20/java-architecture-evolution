@@ -18,18 +18,19 @@ public class BoardController implements Controller {
     }
 
     @Override
-    public String process(HttpServletRequest req, HttpServletResponse resp) {
+    public BaseResponse process(HttpServletRequest req, HttpServletResponse resp) {
+        BoardDto returnDto = null;
 
        if (req.getRequestURI().contains("register") && req.getMethod().equals("POST")) {    // 게시글 작성 기능
            // 클라이언트가 JSON 형식으로 전달한 요청을 처리 -> Dto 객체로 만듦
            BoardDto dto = JsonParser.from(req, BoardDto.class);
            // Service의 결과를 반환 받게 변경
-           BoardDto returnDto = boardService.register(dto);
+           returnDto = boardService.register(dto);
        } else if (req.getRequestURI().contains("read") && req.getMethod().equals("GET")) {  // 게시글 조회 기능
           String boardIdx = req.getParameter("idx");
-          BoardDto returnDto = boardService.read(boardIdx);
+          returnDto = boardService.read(boardIdx);
        }
 
-        return "";
+        return BaseResponse.success(returnDto);
     }
 }
