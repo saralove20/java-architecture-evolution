@@ -17,11 +17,15 @@ public class AppConfig {
     // AppConfig에서 객체 생성함 + 각 클래스별로 필요한 의존성(의존 객체)을 주입해줌
     private final BoardRepository boardRepository = new BoardRepositoryImpl();
     private final BoardService boardService = new BoardService(boardRepository);
+    private final BoardController boardController = new BoardController(boardService);
+
+    private final UserController userController = new UserController();
 
     // 처음 객체가 생성될 때 controllerMap에 uri를 키로 컨트롤러 객체를 값으로 저장
     public AppConfig() {
-        controllerMap.put("/board/register", new BoardController(boardService));
-        controllerMap.put("/user/signup", new UserController());
+        controllerMap.put("/board/register", boardController);
+        controllerMap.put("/board/read", boardController);
+        controllerMap.put("/user/signup", userController);
     }
 
     // 특정 uri를 이용해서 해당하는 특정 컨트롤러 객체를 반환하는 메소드

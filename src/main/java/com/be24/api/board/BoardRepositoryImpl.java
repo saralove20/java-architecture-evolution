@@ -10,6 +10,35 @@ import java.sql.Statement;
 // BoardRepository를 인터페이스로 만들고, 구현체를 구현함
 public class BoardRepositoryImpl implements BoardRepository {
     // DB 서버에 연결 및 저장하는 부분
+    // 게시글 조회
+    public BoardDto read(String boardIdx) {
+        String sql = "SELECT * FROM board WHERE board_id = " + boardIdx;
+        try {
+            // DB 드라이버 로딩
+            Class.forName("org.mariadb.jdbc.Driver");
+            // DB 연결
+            Connection conn = DriverManager.getConnection("jdbc:mariadb://127.0.0.1:3306/java_practice", "root", "qwer1234");
+
+            // SQL 실행 및 결과를 받아오는 객체 생성
+            try (Statement stmt = conn.createStatement()) {
+                ResultSet rs = stmt.executeQuery(sql);
+
+                if (rs.next()) {
+                    return new BoardDto(
+                            rs.getInt("board_id"),
+                            rs.getString("title"),
+                            rs.getString("contents")
+                    );
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return null;
+    }
+
+
     // 게시글 작성(등록)
     public BoardDto create(BoardDto dto) {
         String sql = "INSERT INTO board (title, contents) VALUES ('" + dto.getTitle() + "','" + dto.getContents() + "')";

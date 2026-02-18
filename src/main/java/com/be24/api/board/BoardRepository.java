@@ -10,5 +10,6 @@ import java.sql.Statement;
 // DB에 CRUD 하는 부분 Repository로 역할 분리
 // DB 서버에 연결 및 sql 실행
 public interface BoardRepository {
+    public BoardDto read(String boardIdx);
     public BoardDto create(BoardDto dto);
 }

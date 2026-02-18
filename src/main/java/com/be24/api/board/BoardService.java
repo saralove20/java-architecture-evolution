@@ -10,6 +10,14 @@ public class BoardService {
         this.boardRepository = boardRepository;
     }
 
+    // 게시글 조회
+    public BoardDto read(String boardIdx) {
+        BoardDto dto = boardRepository.read(boardIdx);
+
+        return dto;
+    }
+
+    // 게시글 등록
     public BoardDto register(BoardDto dto) {
         // 레포지토리의 결과를 반환받고, 컨트롤러에게 그 결과를 넘겨줌
         BoardDto returnDto = boardRepository.create(dto);
